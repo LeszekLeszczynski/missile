@@ -1,0 +1,19 @@
+{
+  "name": "missile",
+  "version": "0.0.0",
+  "homepage": "https://github.com/lleszczynski/missile",
+  "authors": [
+    "Leszek Leszczynski <leszek.leszczynski@hp.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "paper": "~0.9.23"
+  }
+}

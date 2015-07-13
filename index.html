@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<head>
+	<title>Missile Command</title>
+	<meta charset="utf-8">
+	<script src="bower_components/paper/dist/paper-full.js"></script>
+</head>
+<body>
+	<canvas id="stage" resize style="height:100%; width: 100%"></canvas>
+	<script type="text/paperscript" canvas="stage">
+
+
+		var mousePosition = new Point(0,400);
+
+		Missile = function() {
+			this.position = new Point(300,400);
+			this.speed = new Point(0,0);
+			this.heading = new Point(0,-1);
+			this.fired = false;
+			this.exploding = false;
+
+			this.explosionRadius = 0;
+		}
+
+		Missile.prototype.update = function() {
+
+			var path = null, explosion = null;
+
+			return function(delta) {
+
+				if(this.exploding) {
+
+					this.explosionRadius += 1;
+					
+					if(this.explosionRadius > 30) {
+						this.position = new Point(300,400);
+						this.speed = new Point(0,0);
+						this.fired = false;
+						this.exploding = false;
+						this.explosionRadius = 0;
+					}
+				} else if(this.fired) {
+					this.speed = this.speed + this.heading * 0.2;
+
+					this.position = this.position + this.speed;
+
+					if(this.position.y < this.target.y) {
+						this.speed = new Point(0,0);
+						this.exploding = true;
+					}
+
+					if(this.position.y < 0) {
+						this.position = new Point(300,400);
+						this.speed = new Point(0,0);
+						this.fired = false;
+						this.exploding = false;
+					}
+				} else  {
+					this.heading = (mousePosition - this.position).normalize();
+				}
+				
+
+				if(path) {
+					path.remove();
+				}
+
+				if(explosion) {
+					explosion.remove();
+				}
+
+				if(this.exploding) {
+					explosion = new Path.Circle({
+						center: this.position,
+						radius: this.explosionRadius,
+						fillColor: 'red'
+					});
+				} else {
+					path = new Path.Rectangle({
+						position: this.position,
+						size: [5,15],
+						strokeColor: 'black'
+					});
+
+					path.rotate(this.heading.getAngle()-90);
+				}
+			}
+		}();
+
+		
+		var missile = new Missile();
+
+		function onMouseMove(event) {
+			mousePosition = event.point;
+		}
+
+		function onMouseDown(event) {
+			// Add a segment to the path at the position of the mouse:
+			missile.fired = true;
+			missile.target = event.point;
+		}
+
+		
+		function onFrame(event) {
+			missile.update(event.delta);
+		}
+	</script>
+</body>
+</html>
