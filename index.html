@@ -2,101 +2,10 @@
 <head>
 	<title>Missile Command</title>
 	<meta charset="utf-8">
-	<script src="bower_components/paper/dist/paper-full.js"></script>
-	<script src="bower_components/lodash/lodash.js"></script>
+	<script type="text/javascript" src="require.config.js"></script>
+    <script type="text/javascript" data-main="startup" src="bower_components/requirejs/require.js"></script>
 </head>
 <body>
 	<canvas id="stage" resize style="height:100%; width: 100%"></canvas>
-	<script type="text/paperscript" canvas="stage">
-
-		var MISSILE_DRAG = 0.1,
-			EXPLOSION_RADIUS = 30,
-			EXPLOSION_DURATION = 40;
-
-
-		var sprites = [];
-		
-		var mousePosition = new Point(0,400);
-		
-		Explosion = function(position) {
-			this.position = position;
-			this.explosionRadius = 0;
-			this.duration = 0;
-
-		}
-
-		Explosion.prototype.draw = function() {
-			
-			if(this.explosionRadius < EXPLOSION_RADIUS) {
-				this.explosionRadius += 1;
-			}
-			this.duration += 1;
-
-			if(this.duration > EXPLOSION_DURATION) {
-				this.finished = true;
-			}
-				
-			if(this.path!=null) this.path.remove();
-
-			if(!this.finished) {
-				this.path = new Path.Circle({
-					center: this.position,
-					radius: this.explosionRadius,
-					fillColor: 'red'
-				});
-			}
-			
-		}
-
-		Missile = function(target) {
-			this.position = new Point(300,400);
-			this.speed = new Point(0,0);
-			this.heading = (mousePosition - this.position).normalize();
-			this.target = target;
-		}
-
-		Missile.prototype.draw = function() {
-				
-				this.speed = this.speed + this.heading * MISSILE_DRAG;
-				this.position = this.position + this.speed;
-				if(this.position.y < this.target.y) {
-					sprites.push(new Explosion(this.position));
-					this.finished = true;
-				}
-				if(this.path) {
-					this.path.remove();
-				}
-				
-				if(! this.finished) {
-					this.path = new Path.Rectangle({
-							position: this.position,
-							size: [5,15],
-							strokeColor: 'black'
-					});
-					this.path.rotate(this.heading.getAngle()-90);
-				}
-				
-			}
-		
-		
-		function onMouseMove(event) {
-			mousePosition = event.point;
-		}
-		function onMouseDown(event) {
-			// Add a segment to the path at the position of the mouse:
-			sprites.push(new Missile(event.point));
-		}
-		
-		function onFrame(event) {
-
-			_.each(sprites, function(item) {
-				item.draw();
-			});
-
-			sprites = _.partition(sprites, function(item) {
-				return item.finished;
-			}) [1];
-		}
-	</script>
 </body>
 </html>
