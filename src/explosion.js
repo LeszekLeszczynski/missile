@@ -1,14 +1,15 @@
 define(['paper'], function(paper) {
     var EXPLOSION_RADIUS = 30,
-        EXPLOSION_DURATION = 40;
-    var Explosion = function(position) {
+        EXPLOSION_DURATION = 20;
+    var Explosion = function(position, fof) {
         this.position = position;
         this.explosionRadius = 0;
         this.duration = 0;
+        this.fill = fof=='FRIEND'?'red':'yellow';
     }
     Explosion.prototype.draw = function() {
         if (this.explosionRadius < EXPLOSION_RADIUS) {
-            this.explosionRadius += 1;
+            this.explosionRadius += 2;
         }
         this.duration += 1;
         if (this.duration > EXPLOSION_DURATION) {
@@ -19,7 +20,7 @@ define(['paper'], function(paper) {
             this.path = new paper.Path.Circle({
                 center: this.position,
                 radius: this.explosionRadius,
-                fillColor: 'red'
+                fillColor: this.fill
             });
         }
     }
